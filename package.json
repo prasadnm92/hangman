@@ -1,0 +1,17 @@
+{
+  "name": "Hangman",
+  "version": "0.0.1",
+  "description": "A simple Hangman game",
+  "main": "server.js",
+  "scripts": {
+    "start": "node server.js"
+  },
+  "author": "Jyothi Prasad Nama Mahesh",
+  "license": "ISC",
+  "dependencies": {
+    "body-parser": "^1.17.0",
+    "cookie-parser": "^1.4.3",
+    "express": "^4.15.0",
+    "express-session": "^1.15.1"
+  }
+}
