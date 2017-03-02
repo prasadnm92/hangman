@@ -1,4 +1,25 @@
-<div class="container-fluid">
-    <h1>Hello World!</h1>
-    <span class="btn">{{model.hello}}</span>
+<div class="container center">
+    <h1>Hangman!</h1>
+    <h2>Start guessing</h2>
+    <div class="container background-lightgrey">
+        <img class="image-hangman" ng-src="../images/{{model.wrongGuesses}}.png">
+    </div>
+    <div>
+        <h3>
+            _ _ _ _ _ _ _
+        </h3>
+    </div>
+    <div id="alphabetButtons">
+        <ul>
+            <li class="btn letter-buttons"
+                ng-repeat="letter in model.alphabet"
+                ng-click="model.checkGuess(letter);"
+                ng-class="model.guesses.includes(letter)?'disabled':'btn-primary'">
+                {{letter}}
+            </li>
+        </ul>
+    </div>
+    <div>
+        {{model.guesses}}
+    </div>
 </div>

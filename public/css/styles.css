@@ -1,0 +1,17 @@
+.center {
+    text-align: center;
+}
+
+.background-lightgrey {
+    background-color: lightgrey
+}
+
+.image-hangman {
+    padding: 5px;
+    border: dashed;
+    border-color: gray
+}
+
+.letter-buttons {
+    margin-right: 5px;
+}
