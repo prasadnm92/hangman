@@ -1,8 +1,24 @@
 <div class="container center">
+    <div class="row">
+        <form action="/api/wordSet/upload"  method="post" enctype="multipart/form-data">
+            <div class="col-md-2 pull-right">
+                <button type="submit"
+                        class="btn btn-block btn-success"
+                        data-toggle="tooltip"
+                        title="Upload a text file with the set of words (new-line separated) you want to guess from to play Hangman!">
+                    Upload Word Set
+                </button>
+            </div>
+            <div class="col-sm-3 pull-right">
+                <input name="myFile" type="file" class="form-control"/>
+                <input name="test" value="Test" style="display: none"/>
+            </div>
+        </form>
+    </div>
     <h1>Hangman!</h1>
     <h2>Start guessing</h2>
-    <div class="container background-lightgrey">
-        <img class="image-hangman" ng-src="../images/{{model.wrongGuesses}}.png">
+    <div class="container-fluid background-lightgrey">
+        <img class="image-hangman" ng-src="../images/{{model.client.wrongGuesses}}.png">
     </div>
     <div>
         <h3>
@@ -20,6 +36,6 @@
         </ul>
     </div>
     <div>
-        {{model.guesses}}
+        {{model.client.currentGuesses}}
     </div>
 </div>

@@ -8,13 +8,12 @@
 
     function GameService($http) {
         var api = {
-            saveClientSession: saveClientSession
+            getClientSession: getClientSession
         };
         return api;
 
-        function saveClientSession() {
-            console.log("in service");
-            return $http.get("/test");
+        function getClientSession() {
+            return $http.get("/api/client");
         }
     }
 })();

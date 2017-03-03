@@ -8,21 +8,20 @@
 
     function GameController(GameService) {
         var vm = this;
-        vm.guesses = [];
         vm.checkGuess = checkGuess;
 
         function init() {
-            vm.wrongGuesses = 0;
             vm.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G',
                 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
                 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
             GameService
-                .saveClientSession()
-                .success(function(status) {
-                    console.log(status);
+                .getClientSession()
+                .success(function(client) {
+                    console.log(client);
+                    vm.client = client;
                 })
                 .error(function(err) {
-                    console.log("error in get: "+err);
+                    vm.error = err;
                 });
         }
         init();

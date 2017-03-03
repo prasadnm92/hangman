@@ -7,9 +7,8 @@ module.exports = function() {
     var ClientModel = mongoose.model("ClientModel", ClientSchema);
 
     var api = {
-        saveClientSession       : saveClientSession,
+        createClientSession     : createClientSession,
         getClientDetails        : getClientDetails,
-        updateWordSet           : updateWordSet,
         updateCurrentWord       : updateCurrentWord,
         updateWrongGuesses      : updateWrongGuesses,
         updateGuesses           : updateGuesses,
@@ -17,21 +16,21 @@ module.exports = function() {
     };
     return api;
 
-    function saveClientSession(client) {
+    function createClientSession(client) {
         return ClientModel
             .create(client);
     }
 
-    function getClientDetails(sessionId) {
+    function getClientDetails(sessionID) {
         return ClientModel
-            .findOne({sessionId: sessionId});
+            .findOne({sessionID: sessionID});
     }
 
-    function updateWordSet(sessionId, wordSet) {
+    /*function updateWordSet(sessionID, wordSet) {
         return ClientModel
             .update(
                 {
-                    sessionId: sessionId
+                    sessionID: sessionID
                 },
                 {
                     wordSet: wordSet,
@@ -40,13 +39,13 @@ module.exports = function() {
                     wrongGuesses: 0
                 }
             );
-    }
+    }*/
 
-    function updateCurrentWord(sessionId, word) {
+    function updateCurrentWord(sessionID, word) {
         return ClientModel
             .update(
                 {
-                    sessionId: sessionId
+                    sessionID: sessionID
                 },
                 {
                     currentWord: word,
@@ -56,11 +55,11 @@ module.exports = function() {
             );
     }
 
-    function updateWrongGuesses(sessionId, wrongGuesses) {
+    function updateWrongGuesses(sessionID, wrongGuesses) {
         return ClientModel
             .update(
                 {
-                    sessionId: sessionId
+                    sessionID: sessionID
                 },
                 {
                     wrongGuesses: wrongGuesses
@@ -68,16 +67,16 @@ module.exports = function() {
             );
     }
 
-    function updateGuesses(sessionId, guessedLetter) {
+    function updateGuesses(sessionID, guessedLetter) {
         return ClientModel
-            .findOne({sessionId: sessionId})
+            .findOne({sessionID: sessionID})
             .select({"_id":0, "currentGuesses":1})
             .then(function(currentGuesses) {
                 currentGuesses.push(guessedLetter);
                 return ClientModel
                     .update(
                         {
-                            sessionId: sessionId
+                            sessionID: sessionID
                         },
                         {
                             currentGuesses: currentGuesses
@@ -86,13 +85,13 @@ module.exports = function() {
             });
     }
 
-    function updateGamesPlayed(sessionId, lastGameStatus, playingAgain) {
+    function updateGamesPlayed(sessionID, lastGameStatus, playingAgain) {
         var incrWon = lastGameStatus ? 1 : 0;
         var incrGames = playingAgain ? 1 : 0;
         return ClientModel
             .update(
                 {
-                    sessionId: sessionId
+                    sessionID: sessionID
                 },
                 {
                     $inc: {

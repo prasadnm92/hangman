@@ -3,6 +3,7 @@
  */
 module.exports = function() {
     var mongoose = require("mongoose");
+    mongoose.Promise = require('bluebird');
     var connectionString = "mongodb://127.0.0.1:27017/hangman";
     console.log("Connecting to local mongo...");
     mongoose.connect(connectionString);
@@ -12,4 +13,4 @@ module.exports = function() {
         clientModel: clientModel
     };
     return model;
-}
+};
