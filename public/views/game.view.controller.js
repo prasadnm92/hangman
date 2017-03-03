@@ -6,7 +6,7 @@
         .module("Hangman")
         .controller("GameController", GameController);
 
-    function GameController() {
+    function GameController(GameService) {
         var vm = this;
         vm.guesses = [];
         vm.checkGuess = checkGuess;
@@ -16,6 +16,14 @@
             vm.alphabet = ['A', 'B', 'C', 'D', 'E', 'F', 'G',
                 'H', 'I', 'J', 'K', 'L', 'M', 'N', 'O', 'P', 'Q',
                 'R', 'S', 'T', 'U', 'V', 'W', 'X', 'Y', 'Z'];
+            GameService
+                .saveClientSession()
+                .success(function(status) {
+                    console.log(status);
+                })
+                .error(function(err) {
+                    console.log("error in get: "+err);
+                });
         }
         init();
 
