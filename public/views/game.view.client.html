@@ -17,12 +17,20 @@
     </div>
     <h1>Hangman!</h1>
     <h2>Start guessing</h2>
+    <h2>{{model.client.gamesWon}}/{{model.client.gamesPlayed}}</h2>
+    <h1>Have I won yet? {{model.winStatus}}</h1>
+    <h1>So did I lose? {{model.loseStatus}}</h1>
     <div class="container-fluid background-lightgrey">
         <img class="image-hangman" ng-src="../images/{{model.client.wrongGuesses}}.png">
     </div>
+    {{model.client}}
+    {{model.currWordArray}}
     <div>
         <h3>
-            _ _ _ _ _ _ _
+            <span ng-repeat="letter in model.currWordArray track by $index">
+                <span ng-if="model.client.currentGuesses.includes(letter)">{{letter.toUpperCase();}}</span>
+                <span ng-if="!model.client.currentGuesses.includes(letter)">_</span>
+            </span>
         </h3>
     </div>
     <div id="alphabetButtons">
@@ -30,8 +38,8 @@
             <li class="btn letter-buttons"
                 ng-repeat="letter in model.alphabet"
                 ng-click="model.checkGuess(letter);"
-                ng-class="model.guesses.includes(letter)?'disabled':'btn-primary'">
-                {{letter}}
+                ng-class="model.client.currentGuesses.includes(letter)?'disabled':'btn-primary'">
+                {{letter.toUpperCase();}}
             </li>
         </ul>
     </div>

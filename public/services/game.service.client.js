@@ -8,12 +8,17 @@
 
     function GameService($http) {
         var api = {
-            getClientSession: getClientSession
+            getClientSession: getClientSession,
+            updateGuess: updateGuess
         };
         return api;
 
         function getClientSession() {
             return $http.get("/api/client");
+        }
+
+        function updateGuess(guessedLetter) {
+            return $http.post("/api/guess",{guessedLetter: guessedLetter});
         }
     }
 })();
