@@ -12,18 +12,20 @@ module.exports = function() {
         mimeType        : String
     });
     var ClientSchema = mongoose.Schema({
-        sessionID : String,
-        wordSet: {
+        sessionID       : String,
+        wordSet         : {
             words: [String],
             metadata: FileMetadata
         },
-        playedWords: [String],
-        currentWord: {type: String, default: ""},
-        currentGuesses: [String],
-        wrongGuesses: {type: Number, default: 0},
-        gamesPlayed: {type: Number, default: 0},
-        gamesWon: {type: Number, default: 0},
-        dateFirstPlayed: {type: Date, default: Date.now}
+        playedWords     : [String],
+        currentWord     : {type: String, default: ""},
+        currentGuesses  : [String],
+        wrongGuesses    : {type: Number, default: 0},
+        currWinStatus   : {type: Boolean, default: false},
+        currLoseStatus  : {type: Boolean, default: false},
+        gamesPlayed     : {type: Number, default: 0},
+        gamesWon        : {type: Number, default: 0},
+        dateFirstPlayed : {type: Date, default: Date.now}
     }, {collection: "client"});
 
     return ClientSchema;

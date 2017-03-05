@@ -8,8 +8,9 @@
 
     function GameService($http) {
         var api = {
-            getClientSession: getClientSession,
-            updateGuess: updateGuess
+            getClientSession    : getClientSession,
+            updateGuess         : updateGuess,
+            startNewGame        : startNewGame
         };
         return api;
 
@@ -19,6 +20,10 @@
 
         function updateGuess(guessedLetter) {
             return $http.post("/api/guess",{guessedLetter: guessedLetter});
+        }
+
+        function startNewGame() {
+            return $http.post("/api/game");
         }
     }
 })();
