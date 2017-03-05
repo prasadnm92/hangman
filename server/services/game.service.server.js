@@ -5,6 +5,10 @@ module.exports = function(app, model) {
     var fs = require('fs');
     var multer= require('multer');
     var upload = multer({dest: __dirname+"/../../public/files"});
+    var cookieOptions = {
+        maxAge:  24 * 60 * 60 * 1000,
+        httpOnly: true
+    };
 
     app.get("/api/client", getClientSession);
     app.post("/api/guess", updateGuess);
@@ -12,33 +16,51 @@ module.exports = function(app, model) {
     app.post("/api/wordSet/upload", upload.single('myFile'), uploadWordSet);
 
     function getClientSession(req, res) {
+        if(req.cookies && req.cookies.sessionID) {
+            var sessionID = req.cookies.sessionID;
+            model
+                .clientModel
+                .getClientDetails(sessionID)
+                .then(function(existingClient) {
+                    if(!existingClient) {
+                        createClientSession(req, res);
+                    }
+                    else {
+                        res.cookie('sessionID',existingClient.sessionID,cookieOptions);
+                        res.send(existingClient);
+                    }
+                });
+        }
+        else {
+            createClientSession(req, res);
+        }
+    }
+
+    function createClientSession(req, res) {
         var client = {
-            sessionID : req.sessionID
+            sessionID : req.sessionID,
+            wordSet : {
+                words : readWordsFromFile('words') //default word set
+            }
         };
         model
             .clientModel
-            .getClientDetails(client.sessionID)
-            .then(function(existingClient) {
-                if(existingClient) res.send(existingClient);
-                else {
-                    client.wordSet = {
-                        words : readWordsFromFile('words') //default word set
-                    };
-                    model
-                        .clientModel
-                        .createClientSession(client)
-                        .then(function(client) {
-                            startGame(client)
-                                .then(function(client) {
-                                    res.send(client);
-                                });
-                        });
-                }
+            .createClientSession(client)
+            .then(function(client) {
+                startGame(client)
+                    .then(function(client) {
+                        res.cookie('sessionID',client.sessionID,cookieOptions);
+                        res.send(client);
+                    });
             });
     }
 
     function uploadWordSet(req, res) {
-        var sessionID = req.sessionID;
+        var sessionID = req.cookies.sessionID;
+        if(!sessionID) {
+            res.redirect("#/game");
+            return;
+        }
         model
             .clientModel
             .getClientDetails(sessionID)
@@ -58,6 +80,7 @@ module.exports = function(app, model) {
                     .then(function(updatedClient) {
                         startGame(updatedClient)
                             .then(function(client) {
+                                res.cookie('sessionID',client.sessionID,cookieOptions);
                                 res.redirect("#/game");
                             });
                     });
@@ -66,7 +89,11 @@ module.exports = function(app, model) {
 
     function updateGuess(req, res) {
         var currentGuessedLetter = req.body.guessedLetter;
-        var sessionID = req.sessionID;
+        var sessionID = req.cookies.sessionID;
+        if(!sessionID) {
+            res.redirect("#/game");
+            return;
+        }
         model
             .clientModel
             .getClientDetails(sessionID)
@@ -75,29 +102,40 @@ module.exports = function(app, model) {
                 if(!client.currentWord.includes(currentGuessedLetter)) {
                     client.wrongGuesses++;
                 }
+
                 var wordCharArray = client.currentWord.split('');
                 client.currWinStatus = wordCharArray.every(function(char) {
                     return client.currentGuesses.indexOf(char) >= 0;
                 });
                 client.currLoseStatus = (client.wrongGuesses==10);
+
+                if(client.currWinStatus || client.currLoseStatus) {
+                    client.gamesPlayed++;
+                    if(client.currWinStatus) client.gamesWon++;
+                }
+
                 client
                     .save()
                     .then(function(updatedClient) {
+                        res.cookie('sessionID',updatedClient.sessionID,cookieOptions);
                         res.send(updatedClient);
                     });
             });
     }
 
     function startNewGame(req, res) {
-        var sessionID = req.sessionID;
+        var sessionID = req.cookies.sessionID;
+        if(!sessionID) {
+            res.redirect("#/game");
+            return;
+        }
         model
             .clientModel
             .getClientDetails(sessionID)
             .then(function(client) {
-                client.gamesPlayed++;
-                if(client.currWinStatus) client.gamesWon++;
                 startGame(client)
                     .then(function(updatedClient) {
+                        res.cookie('sessionID',updatedClient.sessionID,cookieOptions);
                         res.send(updatedClient);
                     });
             });

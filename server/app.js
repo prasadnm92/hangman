@@ -3,6 +3,7 @@
  */
 module.exports = function(app) {
     var model = require("./models/models.server.js")();
+    var cookieParser = require('cookie-parser');
     var expressSession = require('express-session');
     var sessionOptions = {
         cookie: {
@@ -13,6 +14,7 @@ module.exports = function(app) {
         saveUninitialized: true,            // forces uninitialized session to be stored
         secret: "some_high_entropy_string"
     };
+    app.use(cookieParser());
     app.use(expressSession(sessionOptions));
 
     require("./services/game.service.server.js")(app, model);
