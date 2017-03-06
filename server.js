@@ -21,7 +21,7 @@ var port = process.env.NODEJS_PORT || 3000;
 
 //start listening on port
 var server = app.listen(port);
-console.log("Listening on port...");
+console.log("Listening on port "+port+"...");
 
 module.exports.closeServer = function() {
     server.close();

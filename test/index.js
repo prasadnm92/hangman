@@ -5,11 +5,12 @@ var expect  = require("chai").expect;
 var request = require("request");
 var async = require('async');
 
-var domain = "http://localhost:3000";
+var domain = "http://localhost:3003";
 var server = '';
 
 before('start the server', function(done) {
     this.timeout(10000);
+    process.env.NODEJS_PORT = 3003;
     server = require('../server.js');
     setTimeout(done,3000);
 });

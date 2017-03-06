@@ -16,4 +16,4 @@ A simple Hangman game implementation
     - run server using `node server.js` in the project directory
     - open browser and navigate to `localhost:3000/`
     - Guess away!!	
-    - (optional) run `npm test` in the project directory while server is runnning to run some test cases
+    - (optional) run `npm test` in the project directory to run some test cases
