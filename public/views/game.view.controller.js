@@ -8,13 +8,18 @@
 
     function GameController(GameService) {
         var vm = this;
-        vm.keyEvent = keyEvent
+        vm.keyEvent = keyEvent;
         vm.checkGuess = checkGuess;
         vm.startNewGame = startNewGame;
 
         function init() {
             vm.alphabet = [];
             vm.error = '';
+            /*
+             * generate the alphabet for the user input
+             * buttons to guess letters
+             *
+             * */
             for(var i=97;i<=122;i++) {
                 vm.alphabet.push(String.fromCharCode(i));
             }
@@ -34,6 +39,11 @@
 
         function keyEvent(event) {
             var key = event.keyCode;
+            /*
+             * if the key press was a valid input
+             * then send it to the server as a guess
+             *
+             * */
             if((key>96 && key<123) || (key>64 && key<91)) {
                 var letter = String.fromCharCode(key);
                 checkGuess((letter));
@@ -46,6 +56,10 @@
                 .success(function(client) {
                     vm.client = client;
                     if(vm.client.currWinStatus || vm.client.currLoseStatus) {
+                        /*
+                         * show end game modal if the game is over
+                         *
+                         * */
                         $('#gameOver').modal({keyboard: true});
                     }
                 })
@@ -75,7 +89,7 @@
             }
             else {
                 vm.client = client;
-                vm.currWordArray = client.currentWord.split('');
+                vm.currWordArray = client.currentWord.split('');    // used by UI to render the word to be guessed
             }
         }
     }
