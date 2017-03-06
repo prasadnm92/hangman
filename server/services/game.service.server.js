@@ -98,6 +98,11 @@ module.exports = function(app, model) {
             .clientModel
             .getClientDetails(sessionID)
             .then(function(client) {
+                if(client.currentGuesses.indexOf(currentGuessedLetter) >= 0) {
+                    res.cookie('sessionID',client.sessionID,cookieOptions);
+                    res.send(client);
+                    return;
+                }
                 client.currentGuesses.push(currentGuessedLetter);
                 if(!client.currentWord.includes(currentGuessedLetter)) {
                     client.wrongGuesses++;
@@ -149,8 +154,9 @@ module.exports = function(app, model) {
         var newWordFound = false;
         while(!newWordFound) {
             var index = Math.floor(Math.random() * client.wordSet.words.length);
-            if(client.playedWords.indexOf(client.wordSet.words[index]) < 0) {
-                client.currentWord = client.wordSet.words[index];
+            var checkWord = client.wordSet.words[index].toLowerCase()
+            if(client.playedWords.indexOf(checkWord) < 0) {
+                client.currentWord = checkWord;
                 client.currentGuesses = [];
                 client.wrongGuesses = 0;
                 client.currWinStatus = client.currLoseStatus = false;
