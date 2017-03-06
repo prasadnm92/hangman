@@ -22,6 +22,9 @@
                 .getClientSession()
                 .success(function(client) {
                     initiateGame(client);
+                    $(document).ready(function() {
+                        document.getElementById('keyEventArea').focus();
+                    });
                 })
                 .error(function(err) {
                     vm.error = err;
@@ -43,7 +46,7 @@
                 .success(function(client) {
                     vm.client = client;
                     if(vm.client.currWinStatus || vm.client.currLoseStatus) {
-                        $('#gameOver').modal('show');
+                        $('#gameOver').modal({keyboard: true});
                     }
                 })
                 .error(function(err) {

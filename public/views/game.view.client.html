@@ -1,5 +1,5 @@
 <div class="container center">
-    <div class="modal fade" id="gameOver" role="dialog">
+    <div class="modal fade" id="gameOver" role="dialog" tabindex="-1">
         <div class="modal-dialog" role="document">
             <div class="modal-content">
                 <div class="modal-header">
@@ -56,7 +56,7 @@
         </form>
     </div>
 
-    <div ng-keypress="model.keyEvent($event);" tabindex="1">
+    <div ng-keypress="model.keyEvent($event);" tabindex="1" id="keyEventArea">
         <h1>Hangman!</h1>
 
         <h2>
