@@ -8,11 +8,13 @@
 
     function GameController(GameService) {
         var vm = this;
+        vm.keyEvent = keyEvent
         vm.checkGuess = checkGuess;
         vm.startNewGame = startNewGame;
 
         function init() {
             vm.alphabet = [];
+            vm.error = '';
             for(var i=97;i<=122;i++) {
                 vm.alphabet.push(String.fromCharCode(i));
             }
@@ -26,6 +28,14 @@
                 });
         }
         init();
+
+        function keyEvent(event) {
+            var key = event.keyCode;
+            if((key>96 && key<123) || (key>64 && key<91)) {
+                var letter = String.fromCharCode(key);
+                checkGuess((letter));
+            }
+        }
 
         function checkGuess(letter) {
             GameService
@@ -42,6 +52,7 @@
         }
 
         function startNewGame(newGame) {
+            vm.error = '';
             if(newGame) {
                 GameService
                     .startNewGame()
@@ -55,8 +66,14 @@
         }
 
         function initiateGame(client) {
-            vm.client = client;
-            vm.currWordArray = client.currentWord.split('');
+            if(!client) {
+                vm.error = "You have played all the words available." +
+                    " To continue playing, upload a new word set.";
+            }
+            else {
+                vm.client = client;
+                vm.currWordArray = client.currentWord.split('');
+            }
         }
     }
 })();

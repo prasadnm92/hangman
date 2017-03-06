@@ -34,6 +34,12 @@
             </div>
         </div>
     </div>
+    <div class="row" style="text-align: left">
+        <ul class="list-group">
+            <li class="list-group-item"><b>*</b> This web-app uses cookies to store your session details</li>
+            <li class="list-group-item"><b>*</b> Focus around the image to use keyboard to input guesses (you will see a blue-outline)</li>
+        </ul>
+    </div>
     <div class="row">
         <form action="/api/wordSet/upload"  method="post" enctype="multipart/form-data">
             <div class="col-md-2 pull-right">
@@ -45,59 +51,67 @@
                 </button>
             </div>
             <div class="col-sm-3 pull-right">
-                <input name="myFile" type="file" class="form-control"/>
+                <input name="myFile" type="file" class="form-control" required/>
             </div>
         </form>
     </div>
-    <h1>Hangman!</h1>
 
-    <div class="row">
+    <div ng-keypress="model.keyEvent($event);" tabindex="1">
+        <h1>Hangman!</h1>
+
         <h2>
             <span ng-if="!model.client.currWinStatus && !model.client.currLoseStatus">Start guessing</span>
             <span ng-if="model.client.currWinStatus" class="green">YOU WON!</span>
             <span ng-if="model.client.currLoseStatus" class="red">YOU LOST!</span>
         </h2>
-    </div>
 
-    <div class="container-fluid background-lightgrey">
-        <img class="image-hangman" ng-src="../images/{{model.client.wrongGuesses}}.png">
-    </div>
+        <div class="container-fluid background-lightgrey">
+            <img class="image-hangman" ng-src="../images/{{model.client.wrongGuesses}}.png">
+        </div>
 
-    <div class="container-fluid">
+        <div class="container-fluid">
+            <div class="row">
+                <span class="pull-right">Games Won / Games Played</span>
+            </div>
+            <div class="row">
+                <strong class="pull-right">{{model.client.gamesWon}} / {{model.client.gamesPlayed}}</strong>
+            </div>
+        </div>
+
+        <div ng-show="model.error" class="alert alert-danger" role="alert">
+            {{model.error}}
+        </div>
+
+        <div>
+            <h3>
+                <span ng-repeat="letter in model.currWordArray track by $index">
+                    <span ng-if="model.client.currentGuesses.includes(letter)">{{letter.toUpperCase();}}</span>
+                    <span ng-if="!model.client.currentGuesses.includes(letter) && letter!=' '">_</span>
+                    <span ng-if="letter==' '">&nbsp; &nbsp;</span>
+                </span>
+            </h3>
+        </div>
+
         <div class="row">
-            <span class="pull-right">Games Won / Games Played</span>
+            <div ng-if="model.client.currLoseStatus">
+                The word was <h4>{{model.client.currentWord.toUpperCase();}}</h4>
+            </div>
         </div>
-        <div class="row">
-            <strong class="pull-right">{{model.client.gamesWon}} / {{model.client.gamesPlayed}}</strong>
-        </div>
-    </div>
 
-    <div>
-        <h3>
-            <span ng-repeat="letter in model.currWordArray track by $index">
-                <span ng-if="model.client.currentGuesses.includes(letter)">{{letter.toUpperCase();}}</span>
-                <span ng-if="!model.client.currentGuesses.includes(letter)">_</span>
-            </span>
-        </h3>
-    </div>
-    <div class="row">
-        <div ng-if="model.client.currLoseStatus">
-            The word was <h4>{{model.client.currentWord.toUpperCase();}}</h4>
+        <div id="alphabetButtons">
+            <ul ng-if="!model.client.currWinStatus && !model.client.currLoseStatus">
+                <li class="btn letter-buttons"
+                    ng-repeat="letter in model.alphabet"
+                    ng-click="model.checkGuess(letter);"
+                    ng-class="model.client.currentGuesses.includes(letter)?'disabled':'btn-primary'">
+                    {{letter.toUpperCase();}}
+                </li>
+            </ul>
+            <button ng-if="model.client.currWinStatus || model.client.currLoseStatus"
+                    ng-click="model.startNewGame(true);"
+                    class="btn btn-primary">
+                Start New Game
+            </button>
         </div>
-    </div>
-    <div id="alphabetButtons">
-        <ul ng-if="!model.client.currWinStatus && !model.client.currLoseStatus">
-            <li class="btn letter-buttons"
-                ng-repeat="letter in model.alphabet"
-                ng-click="model.checkGuess(letter);"
-                ng-class="model.client.currentGuesses.includes(letter)?'disabled':'btn-primary'">
-                {{letter.toUpperCase();}}
-            </li>
-        </ul>
-        <button ng-if="model.client.currWinStatus || model.client.currLoseStatus"
-                ng-click="model.startNewGame(true);"
-                class="btn btn-primary">
-            Start New Game
-        </button>
     </div>
 </div>

@@ -3,6 +3,7 @@
  */
 module.exports = function(app, model) {
     var fs = require('fs');
+    var Promise = require('bluebird');
     var multer= require('multer');
     var upload = multer({dest: __dirname+"/../../public/files"});
     var cookieOptions = {
@@ -48,9 +49,15 @@ module.exports = function(app, model) {
             .createClientSession(client)
             .then(function(client) {
                 startGame(client)
-                    .then(function(client) {
-                        res.cookie('sessionID',client.sessionID,cookieOptions);
-                        res.send(client);
+                    .then(function(updatedClient) {
+                        if(!updatedClient) {
+                            res.cookie('sessionID',client.sessionID,cookieOptions);
+                            res.send(null);
+                        }
+                        else {
+                            res.cookie('sessionID',updatedClient.sessionID,cookieOptions);
+                            res.send(updatedClient);
+                        }
                     });
             });
     }
@@ -58,7 +65,7 @@ module.exports = function(app, model) {
     function uploadWordSet(req, res) {
         var sessionID = req.cookies.sessionID;
         if(!sessionID) {
-            res.redirect("#/game");
+            res.redirect("/#/game");
             return;
         }
         model
@@ -80,8 +87,14 @@ module.exports = function(app, model) {
                     .then(function(updatedClient) {
                         startGame(updatedClient)
                             .then(function(client) {
-                                res.cookie('sessionID',client.sessionID,cookieOptions);
-                                res.redirect("#/game");
+                                if(!client) {
+                                    res.cookie('sessionID',updatedClient.sessionID,cookieOptions);
+                                    res.send(null);
+                                }
+                                else {
+                                    res.cookie('sessionID',client.sessionID,cookieOptions);
+                                    res.redirect("/#/game");
+                                }
                             });
                     });
             });
@@ -91,7 +104,7 @@ module.exports = function(app, model) {
         var currentGuessedLetter = req.body.guessedLetter;
         var sessionID = req.cookies.sessionID;
         if(!sessionID) {
-            res.redirect("#/game");
+            res.redirect("/#/game");
             return;
         }
         model
@@ -110,7 +123,7 @@ module.exports = function(app, model) {
 
                 var wordCharArray = client.currentWord.split('');
                 client.currWinStatus = wordCharArray.every(function(char) {
-                    return client.currentGuesses.indexOf(char) >= 0;
+                    return client.currentGuesses.indexOf(char) >= 0 || char == ' ';
                 });
                 client.currLoseStatus = (client.wrongGuesses==10);
 
@@ -131,7 +144,7 @@ module.exports = function(app, model) {
     function startNewGame(req, res) {
         var sessionID = req.cookies.sessionID;
         if(!sessionID) {
-            res.redirect("#/game");
+            res.redirect("/#/game");
             return;
         }
         model
@@ -140,8 +153,14 @@ module.exports = function(app, model) {
             .then(function(client) {
                 startGame(client)
                     .then(function(updatedClient) {
-                        res.cookie('sessionID',updatedClient.sessionID,cookieOptions);
-                        res.send(updatedClient);
+                        if(!updatedClient) {
+                            res.cookie('sessionID',client.sessionID,cookieOptions);
+                            res.send(null);
+                        }
+                        else {
+                            res.cookie('sessionID',updatedClient.sessionID,cookieOptions);
+                            res.send(updatedClient);
+                        }
                     });
             });
     }
@@ -151,10 +170,10 @@ module.exports = function(app, model) {
             client.playedWords.push(client.currentWord);
             client.currentWord = "";
         }
-        var newWordFound = false;
+        var newWordFound = false, noOfTries = 0;
         while(!newWordFound) {
             var index = Math.floor(Math.random() * client.wordSet.words.length);
-            var checkWord = client.wordSet.words[index].toLowerCase()
+            var checkWord = client.wordSet.words[index].toLowerCase();
             if(client.playedWords.indexOf(checkWord) < 0) {
                 client.currentWord = checkWord;
                 client.currentGuesses = [];
@@ -162,6 +181,12 @@ module.exports = function(app, model) {
                 client.currWinStatus = client.currLoseStatus = false;
                 newWordFound = true;
             }
+            if(noOfTries>=client.wordSet.words.length) {
+                return new Promise(function(resolve) {
+                    resolve(null);
+                });
+            }
+            ++noOfTries;
         }
         return client.save();
     }
