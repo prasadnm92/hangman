@@ -6,6 +6,18 @@ var request = require("request");
 var async = require('async');
 
 var domain = "http://localhost:3000";
+var server = '';
+
+before('start the server', function(done) {
+    this.timeout(10000);
+    server = require('../server.js');
+    setTimeout(done,3000);
+});
+
+after('stop the server', function(done) {
+    server.closeServer;
+    done();
+});
 
 describe('Testing all APIs of the app', function() {
     var sessionID = '';
@@ -40,14 +52,16 @@ describe('Testing all APIs of the app', function() {
         var options = {
             url : url,
             method : 'POST',
-            headers : {
-                'Cookie' : 'sessionID='+sessionID
-            },
+            headers : {},
             body : {
                 guessedLetter: 'a'
             },
             json : true
         };
+        before('initialize request options', function(done) {
+            options.headers['Cookie'] = 'sessionID='+sessionID;
+            done();
+        });
 
         it('should send the guessed letter and update guesses', function(done) {
             request(options, function(error, response, body) {

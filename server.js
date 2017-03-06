@@ -20,6 +20,9 @@ require("./server/app.js")(app);
 var port = process.env.NODEJS_PORT || 3000;
 
 //start listening on port
-app.listen(port);
-
+var server = app.listen(port);
 console.log("Listening on port...");
+
+module.exports.closeServer = function() {
+    server.close();
+};
